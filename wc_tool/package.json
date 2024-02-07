@@ -1,0 +1,23 @@
+{
+  "name": "wc_tool",
+  "version": "1.0.0",
+  "description": "Coding Challenges by John Cricket",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "coding_challenges_by_John_crickett"
+  },
+  "keywords": [
+    "NodeJs",
+    "JavaScript",
+    "ReactJs",
+    "Linux",
+    "Windows",
+    "CLI"
+  ],
+  "author": "pavan_emani",
+  "license": "ISC"
+}
