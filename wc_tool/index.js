@@ -1,22 +1,6 @@
 const packageJson = require("./package.json");
 
 const fs = require("fs");
-const readline = require("readline");
-
-
-//Function to write file
-
-function creatingFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    try {
-      fs.writeFileSync(filePath, " ");
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
-    console.log("file already exists");
-  }
-}
 
 
 // Function to count the number of bytes in a file
@@ -26,7 +10,7 @@ function countBytes(filePath) {
     const stats = fs.statSync(filePath);
     if (stats.isFile()) {
       const byteCount = stats.size;
-      console.log(`${byteCount} ${filePath}`);
+      console.log(`${byteCount} bytes in ${filePath}`);
       return byteCount;
     } else {
       console.error(`${filePath} is a directory`);
@@ -42,31 +26,21 @@ function countBytes(filePath) {
 // Function to count the number of lines in a file
 
 function countLines(filePath) {
-  return new Promise((resolve, reject) => {
-    const rl = readline.createInterface({
-      input: fs.createReadStream(filePath),
-      output: process.stdout,
-      terminal: false,
-    });
-
-    let lineCount = 0;
-
-    rl.on("line", (line) => {
-      if (line.trim() !== "") {
-        lineCount++;
-      }
-    });
-
-    rl.on("close", () => {
-      console.log(`${lineCount} ${filePath}`); // Log the line count
-      resolve(lineCount); // Resolve the promise with the line count
-    });
-
-    rl.on("error", (error) => {
-      console.error(`No such file or directory`);
-      reject(error); // Reject the promise in case of an error
-    });
-  });
+  try {
+    const content = fs.readFileSync(filePath, "utf-8");
+    const splitText = content.split(/\r?\n/);
+    const lastLineIsEmpty = splitText[splitText.length - 1] === "";
+    if (lastLineIsEmpty) {
+      console.log(`${splitText.length - 1} lines in ${filePath}`);
+      return splitText.length - 1;
+    } else {
+      console.log(`${splitText.length} lines in ${filePath}`);
+      return splitText.length;
+    }
+  } catch (error) {
+    console.error(`Error reading ${filePath}: ${error}`);
+    process.exit(1);
+  }
 }
 
 
@@ -76,7 +50,7 @@ function countWords(filePath) {
   try {
     const data = fs.readFileSync(filePath, "utf-8");
     const words = data.split(/\s+/).filter((word) => word.trim() !== "");
-    console.log(`${words.length} ${filePath}`);
+    console.log(`${words.length} words in ${filePath}`);
     return words.length;
   } catch (error) {
     console.error(`Error reading ${filePath}: ${error}`);
@@ -108,7 +82,9 @@ async function countBytesLinesWords(filePath) {
   const wordCount = await countWords(filePath);
   const lineCount = await countLines(filePath);
   const charactersCount = await countCharacters(filePath);
-  console.log(`${byteCount} ${wordCount} ${lineCount} ${charactersCount} ${filePath}`);
+  console.log(
+    `${byteCount} bytes, ${wordCount} words, ${lineCount} lines, ${charactersCount} characters in ${filePath}`
+  );
 }
 
 
